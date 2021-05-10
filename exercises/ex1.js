@@ -18,14 +18,25 @@ const args = require("minimist")(process.argv.slice(2), {
 if (args.help) {
   printHelp();
 } else if (args.file) {
-  processFile(path.resolve(args.file));
+  processFileAsync(path.resolve(args.file));
 } else {
   error("Incorrect usage.", true);
 }
 
 // ********************
 
-function processFile(filepath) {
+function processFileAsync(filepath) {
+  fs.readFile(filepath, function onContents(err, contents) {
+    if (err) {
+      // Use toString method beause the error will once again be a Buffer
+      error(err.toString());
+    } else {
+      process.stdout.write(contents);
+    }
+  })
+}
+
+function processFileSync(filepath) {
   // If we don't specify an encoding as the second param we can't use console.log because readFileSync returns a Buffer, and console.log will print the Buffer as a string: <Buffer 48 65 6c 6c 6f 20 57 6f 72 6c 64 0a>
   const contents = fs.readFileSync(filepath, "utf8");
 
@@ -48,4 +59,3 @@ function printHelp() {
   console.log("--file={FILENAME}      process the file");
   console.log("");
 }
-// process.stdout.write("Hello world\n");
