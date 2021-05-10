@@ -4,7 +4,15 @@
 
 "use strict";
 
-printHelp();
+// Minimist is a built-in function that applies conventions to command line inputs. The second parameter is default configs.
+// We use slice(2) here because the first argument is always the path the node, and the second is always the path to the file. After that is an array of all the input values.
+const args = require("minimist")(process.argv.slice(2), {
+  boolean: ["help"],
+  string: ["file"],
+});
+console.log(args);
+
+// printHelp();
 
 // ********************
 
