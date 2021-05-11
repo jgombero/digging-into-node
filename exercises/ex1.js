@@ -16,12 +16,15 @@ const args = require("minimist")(process.argv.slice(2), {
   string: ["file"],
 });
 
+const BASE_PATH = path.resolve(process.env.BASE_PATH || __dirname);
+
+
 if (args.help) {
   printHelp();
 } else if (args.in || args._.includes("-")) {
   getStdin().then(processFile).catch(error);
 } else if (args.file) {
-  fs.readFile(path.resolve(args.file), function onContents(err, contents) {
+  fs.readFile(path.join(BASE_PATH, args.file), function onContents(err, contents) {
     if (err) {
       // Use toString method beause the error will once again be a Buffer
       error(err.toString());
