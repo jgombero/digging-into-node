@@ -4,36 +4,40 @@
 
 "use strict";
 
-// path is built into node
+const util = require("util");
 const path = require("path");
 const fs = require("fs");
+const getStdin = require("get-stdin");
 
 // Minimist is a function/library that applies conventions to command line inputs. The second parameter is default configs.
 // We use slice(2) here because the first argument is always the path the node, and the second is always the path to the file. After that is an array of all the input values.
 const args = require("minimist")(process.argv.slice(2), {
-  boolean: ["help"],
+  boolean: ["help", "in"],
   string: ["file"],
 });
 
 if (args.help) {
   printHelp();
+} else if (args.in || args._.includes("-")) {
+  getStdin().then(processFile).catch(error);
 } else if (args.file) {
-  processFileAsync(path.resolve(args.file));
+  fs.readFile(path.resolve(args.file), function onContents(err, contents) {
+    if (err) {
+      // Use toString method beause the error will once again be a Buffer
+      error(err.toString());
+    } else {
+      processFile(contents.toString());
+    }
+  });
 } else {
   error("Incorrect usage.", true);
 }
 
 // ********************
 
-function processFileAsync(filepath) {
-  fs.readFile(filepath, function onContents(err, contents) {
-    if (err) {
-      // Use toString method beause the error will once again be a Buffer
-      error(err.toString());
-    } else {
-      process.stdout.write(contents);
-    }
-  })
+function processFile(contents) {
+  contents = contents.toUpperCase();
+  process.stdout.write(contents);
 }
 
 function processFileSync(filepath) {
@@ -57,5 +61,6 @@ function printHelp() {
   console.log("");
   console.log("--help                 print this help");
   console.log("--file={FILENAME}      process the file");
+  console.log("--in, -                process stdin");
   console.log("");
 }
