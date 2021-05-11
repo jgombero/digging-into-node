@@ -10,7 +10,7 @@ const fs = require("fs");
 const getStdin = require("get-stdin");
 
 // Minimist is a function/library that applies conventions to command line inputs. The second parameter is default configs.
-// We use slice(2) here because the first argument is always the path the node, and the second is always the path to the file. After that is an array of all the input values.
+// We use slice(2) here because the first argument is always the path to node, and the second is always the path to the file. After that is an array of all the input values.
 const args = require("minimist")(process.argv.slice(2), {
   boolean: ["help", "in"],
   string: ["file"],
