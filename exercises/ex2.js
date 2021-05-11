@@ -7,7 +7,7 @@
 const util = require("util");
 const path = require("path");
 const fs = require("fs");
-const getStdin = require("get-stdin");
+// const getStdin = require("get-stdin");
 
 // Minimist is a function/library that applies conventions to command line inputs. The second parameter is default configs.
 // We use slice(2) here because the first argument is always the path to node, and the second is always the path to the file. After that is an object of all the input properties and values.
@@ -22,25 +22,25 @@ const BASE_PATH = path.resolve(process.env.BASE_PATH || __dirname);
 if (args.help) {
   printHelp();
 } else if (args.in || args._.includes("-")) {
-  getStdin().then(processFile).catch(error);
+  processFile(process.stdin);
 } else if (args.file) {
-  fs.readFile(path.join(BASE_PATH, args.file), function onContents(err, contents) {
-    if (err) {
-      // Use toString method beause the error will once again be a Buffer
-      error(err.toString());
-    } else {
-      processFile(contents.toString());
-    }
-  });
+  let stream = fs.createReadStream(path.join(BASE_PATH, args.file));
+
+  processFile(stream);
 } else {
   error("Incorrect usage.", true);
 }
 
-// ********************
+// ******************************
 
-function processFile(contents) {
-  contents = contents.toUpperCase();
-  process.stdout.write(contents);
+// This is better than ex1.js because we take in a stream, meaning we read a chunk, then write a chunk, rinse and repeat. This means we only have ~65,000 bytes of data loaded in memory at any given time.
+function processFile(inStream) {
+  // Readable Stream
+  const outStream = inStream;
+  
+  // Writeable Stream
+  const targetStream = process.stdout;
+  outStream.pipe(targetStream);
 }
 
 function processFileSync(filepath) {
