@@ -38,6 +38,7 @@ if (args.help) {
 
 // ********************
 
+// This isn't great becuase if the contents are a big 1 megabyte file, then we're loading it all into memory initially, then performing an operation on the entire file, then writing the entire file to stdout stream. Very expensive operation!
 function processFile(contents) {
   contents = contents.toUpperCase();
   process.stdout.write(contents);
