@@ -7,8 +7,7 @@
 const util = require("util");
 const path = require("path");
 const fs = require("fs");
-const Transfrom = require("stream").Transfrom;
-const { Transform } = require("node:stream");
+const Transform = require("stream").Transform;
 // const getStdin = require("get-stdin");
 
 // Minimist is a function/library that applies conventions to command line inputs. The second parameter is default configs.
@@ -37,7 +36,7 @@ if (args.help) {
 // This is better than ex1.js because we take in a stream, meaning we read a chunk, then write a chunk, rinse and repeat. This means we only have ~65,000 bytes of data loaded in memory at any given time.
 function processFile(inStream) {
   // Readable Stream
-  const outStream = inStream;
+  let outStream = inStream;
 
   const upperStream = new Transform({
     transform(chunk, enc, cb) {
