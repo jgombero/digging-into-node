@@ -7,6 +7,8 @@
 const util = require("util");
 const path = require("path");
 const fs = require("fs");
+const Transfrom = require("stream").Transfrom;
+const { Transform } = require("node:stream");
 // const getStdin = require("get-stdin");
 
 // Minimist is a function/library that applies conventions to command line inputs. The second parameter is default configs.
@@ -17,7 +19,6 @@ const args = require("minimist")(process.argv.slice(2), {
 });
 
 const BASE_PATH = path.resolve(process.env.BASE_PATH || __dirname);
-
 
 if (args.help) {
   printHelp();
@@ -37,7 +38,16 @@ if (args.help) {
 function processFile(inStream) {
   // Readable Stream
   const outStream = inStream;
-  
+
+  const upperStream = new Transform({
+    transform(chunk, enc, cb) {
+      this.push(chunk.toString().toUpperCase());
+      cb();
+    },
+  });
+
+  outStream = outStream.pipe(upperStream);
+
   // Writeable Stream
   const targetStream = process.stdout;
   outStream.pipe(targetStream);
